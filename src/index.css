@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  --color-gallery-white: #f9f9f7;
+  --color-ink-black: #1a1a1a;
+  --color-sidebar: #1a1c19;
+  --color-sidebar-dark: #1a1c19;
+  --color-sidebar-hover: #2a2c29;
+  --color-accent: #8a9a5b;
+  --color-accent-sage: #8a9a5b;
+  --color-accent-soft: #e8ede0;
+  --color-accent-dark: #6f7f45;
+  --color-surface: #f9f9f7;
+  --color-surface-dim: #d8d8d3;
+  --color-surface-bright: #fdfcf9;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f5f5f2;
+  --color-surface-container: #efefe9;
+  --color-surface-container-high: #e7e7e1;
+  --color-surface-container-highest: #deded7;
+  --color-soft-sky: #e4e9df;
+  --color-muted-earth: #78746d;
+  --color-border-grey: #2d2e2b;
+  --color-primary: #1a1c19;
+  --color-secondary: #8a9a5b;
+  --color-outline: #737871;
+  --color-outline-variant: #dcdcd6;
+}
+
+@layer utilities {
+  .painting-border {
+    border: 1px solid #1a1c19;
+  }
+  .painting-border-bold {
+    border: 2px solid #1a1c19;
+  }
+  .photo-border {
+    border: 1px dashed #5a5e57;
+  }
+  .geometric-card {
+    background-color: #ffffff;
+    border: 1px solid #e7e7e2;
+  }
+}
+
+/* Custom scrollbar and smooth transitions */
+html {
+  scroll-behavior: smooth;
+  background-color: #f9f9f7;
+  color: #1a1a1a;
+}
+
+::selection {
+  background-color: #e8ede0;
+  color: #1a1c19;
+}
+
