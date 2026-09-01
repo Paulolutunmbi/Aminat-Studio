@@ -35,8 +35,8 @@ export const AdminLayout: React.FC = () => {
     return location.pathname.startsWith(item.path);
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/admin/login');
   };
 

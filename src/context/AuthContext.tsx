@@ -1,57 +1,66 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { api } from '../services/api';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   username: string | null;
   login: (user: string, pass: string) => Promise<boolean>;
-  logout: () => void;
+  logout: () => Promise<void>;
+  refreshAuthState: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AUTH_STORAGE_KEY = 'aminat_studio_auth_v1';
-
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    try {
-      const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-      return stored ? JSON.parse(stored).isAuthenticated : true; // Default to authenticated for instant preview access, toggleable
-    } catch {
-      return true;
-    }
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
 
-  const [username, setUsername] = useState<string | null>(() => {
+  const refreshAuthState = async () => {
     try {
-      const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-      return stored ? JSON.parse(stored).username : 'aminat';
+      const result = await api.getAdminStatus();
+      setIsAuthenticated(Boolean(result?.authenticated));
+      setUsername(result?.authenticated ? 'admin' : null);
     } catch {
-      return 'aminat';
+      setIsAuthenticated(false);
+      setUsername(null);
     }
-  });
-
-  const login = async (user: string, pass: string): Promise<boolean> => {
-    // Non-sensitive mock check for development/preview
-    if (user.trim().length > 0 && pass.trim().length > 0) {
-      setIsAuthenticated(true);
-      setUsername(user.trim());
-      localStorage.setItem(
-        AUTH_STORAGE_KEY,
-        JSON.stringify({ isAuthenticated: true, username: user.trim() })
-      );
-      return true;
-    }
-    return false;
   };
 
-  const logout = () => {
+  useEffect(() => {
+    refreshAuthState();
+  }, []);
+
+  const login = async (email: string, pass: string): Promise<boolean> => {
+    try {
+      const response = await api.loginAdmin(email, pass);
+      if (!response?.success) {
+        setIsAuthenticated(false);
+        setUsername(null);
+        return false;
+      }
+
+      await refreshAuthState();
+      return true;
+    } catch {
+      setIsAuthenticated(false);
+      setUsername(null);
+      return false;
+    }
+  };
+
+  const logout = async (): Promise<void> => {
+    try {
+      await api.logoutAdmin();
+    } catch {
+      // ignore backend logout failure and clear local state
+    }
+
     setIsAuthenticated(false);
     setUsername(null);
-    localStorage.removeItem(AUTH_STORAGE_KEY);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, username, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, username, login, logout, refreshAuthState }}>
       {children}
     </AuthContext.Provider>
   );

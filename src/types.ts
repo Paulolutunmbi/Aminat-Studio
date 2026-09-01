@@ -11,6 +11,7 @@ export interface Artwork {
   id: string;
   title: string;
   image: string;
+  imageUrl?: string;
   medium: ArtworkMedium;
   description: string;
   category: string;

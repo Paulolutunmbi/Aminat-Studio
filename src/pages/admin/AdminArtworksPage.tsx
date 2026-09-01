@@ -54,6 +54,17 @@ export const AdminArtworksPage: React.FC = () => {
     loadArtworks();
   }, []);
 
+  useEffect(() => {
+    const modalOpen = isAddModalOpen || !!editingArtwork;
+    if (!modalOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isAddModalOpen, editingArtwork]);
+
   // Open add modal if ?action=add query param is provided
   useEffect(() => {
     if (searchParams.get('action') === 'add') {
@@ -302,9 +313,9 @@ export const AdminArtworksPage: React.FC = () => {
 
       {/* Add / Edit Artwork Modal */}
       {(isAddModalOpen || editingArtwork) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto animate-in fade-in">
-          <div className="bg-[#FFFFFF] max-w-2xl w-full p-6 md:p-8 border border-[#E7E7E2] shadow-2xl my-8">
-            <div className="flex justify-between items-center pb-4 border-b border-[#E7E7E2] mb-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-black/60 backdrop-blur-xs overflow-y-auto animate-in fade-in">
+          <div className="bg-[#FFFFFF] max-w-2xl w-full max-h-[calc(100vh-2rem)] md:max-h-[calc(100vh-4rem)] border border-[#E7E7E2] shadow-2xl flex flex-col overflow-hidden">
+            <div className="flex shrink-0 justify-between items-center p-6 md:p-8 pb-4 border-b border-[#E7E7E2]">
               <h2 className="font-serif text-2xl italic text-[#1A1A1A]">
                 {editingArtwork ? `Edit Artwork: ${editingArtwork.title}` : 'Add New Artwork'}
               </h2>
@@ -325,7 +336,8 @@ export const AdminArtworksPage: React.FC = () => {
               </div>
             )}
 
-            <form onSubmit={handleFormSubmit} className="space-y-5">
+            <form onSubmit={handleFormSubmit} className="flex min-h-0 flex-col">
+              <div className="min-h-0 overflow-y-auto p-6 md:p-8 pt-5 space-y-5">
               {/* Image Uploader */}
               <ImageUploader
                 value={formData.image}
@@ -440,8 +452,10 @@ export const AdminArtworksPage: React.FC = () => {
                 </label>
               </div>
 
+              </div>
+
               {/* Actions */}
-              <div className="flex justify-end gap-3 pt-4 border-t border-[#E7E7E2]">
+              <div className="flex shrink-0 justify-end gap-3 p-6 md:px-8 md:py-5 border-t border-[#E7E7E2] bg-[#FFFFFF]">
                 <button
                   type="button"
                   onClick={() => {

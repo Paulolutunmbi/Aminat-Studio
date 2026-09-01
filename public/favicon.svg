@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Aminat Studio monogram">
+  <rect width="64" height="64" rx="16" fill="#F9F9F7"/>
+  <rect x="8" y="8" width="48" height="48" rx="14" fill="#EFF2E6"/>
+  <path d="M19 42.5C14.5 35.8 15.1 22.4 24.7 20.5C31.3 19.3 35.8 22.5 38 28.3C40.7 35.4 37.3 46.7 28 48.8C24.9 49.4 22.3 50.6 20 52.5" fill="none" stroke="#8A9A5B" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M20 34.5C24 31.3 28.8 29.8 34 30.2C38.1 30.5 41.7 33.7 42.5 38" fill="none" stroke="#A9B98B" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M28.5 18.5H32.8V42.2H28.5V18.5ZM23.8 34.8H35.5" fill="#1A1A1A"/>
+</svg>

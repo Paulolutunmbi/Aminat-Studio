@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Shield } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import { Logo } from './Logo';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
@@ -24,9 +25,9 @@ export const Navbar: React.FC = () => {
       <div className="flex justify-between items-center w-full px-6 md:px-20 py-6 max-w-7xl mx-auto">
         <Link
           to="/"
-          className="font-serif text-2xl md:text-3xl text-[#1A1A1A] italic tracking-tight hover:text-[#8A9A5B] transition-colors"
+          className="w-44 md:w-52 text-[#1A1A1A] hover:opacity-75 transition-opacity"
         >
-          Aminat Studio
+          <Logo className="w-full h-auto" />
         </Link>
 
         {/* Desktop Navigation */}
@@ -44,27 +45,10 @@ export const Navbar: React.FC = () => {
               {link.name}
             </Link>
           ))}
-
-          {/* Discreet Admin Portal Link */}
-          <Link
-            to="/admin"
-            className="ml-4 flex items-center gap-1.5 text-xs uppercase tracking-[0.12em] font-medium text-[#737871] hover:text-[#1A1A1A] px-3.5 py-1.5 rounded-full border border-[#E7E7E2] hover:border-[#8A9A5B] hover:bg-[#E8EDE0]/40 transition-all"
-            title="Artist Admin Dashboard"
-          >
-            <Shield className="w-3 h-3 text-[#8A9A5B]" />
-            <span>Admin</span>
-          </Link>
         </nav>
 
         {/* Mobile Menu Button */}
         <div className="flex md:hidden items-center gap-3">
-          <Link
-            to="/admin"
-            className="p-2 text-[#737871] hover:text-[#1A1A1A]"
-            aria-label="Admin"
-          >
-            <Shield className="w-4 h-4 text-[#8A9A5B]" />
-          </Link>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="text-[#1A1A1A] p-2 hover:bg-[#E7E7E2] rounded transition-colors"
@@ -93,16 +77,6 @@ export const Navbar: React.FC = () => {
                 {link.name}
               </Link>
             ))}
-            <div className="pt-4 border-t border-[#E7E7E2]">
-              <Link
-                to="/admin"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 text-xs uppercase tracking-[0.15em] font-semibold text-[#8A9A5B] pl-3 py-1"
-              >
-                <Shield className="w-4 h-4" />
-                <span>Artist Studio Admin</span>
-              </Link>
-            </div>
           </nav>
         </div>
       )}

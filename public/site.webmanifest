@@ -1,0 +1,17 @@
+{
+  "name": "Aminat Studio",
+  "short_name": "Aminat Studio",
+  "description": "Portfolio and gallery for Aminat Studio.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F9F9F7",
+  "theme_color": "#F9F9F7",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

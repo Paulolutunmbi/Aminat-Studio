@@ -10,11 +10,22 @@ export const GalleryPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
-      const list = await dataService.getArtworks();
-      setArtworks(list);
+      try {
+        setLoading(true);
+        setError(null);
+        const list = await dataService.getArtworks();
+        setArtworks(list);
+      } catch (err: any) {
+        setError(err?.message || 'Unable to load artwork collection right now.');
+        setArtworks([]);
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, []);
@@ -95,11 +106,19 @@ export const GalleryPage: React.FC = () => {
 
       {/* Counter */}
       <div className="text-xs text-[#737871] uppercase tracking-wider mb-8">
-        Showing {filteredArtworks.length} {filteredArtworks.length === 1 ? 'artwork' : 'artworks'}
+        {loading ? 'Loading artworks...' : `Showing ${filteredArtworks.length} ${filteredArtworks.length === 1 ? 'artwork' : 'artworks'}`}
       </div>
 
+      {error && (
+        <div className="mb-8 border border-amber-200 bg-amber-50 text-amber-800 text-sm p-4">
+          {error}
+        </div>
+      )}
+
       {/* Gallery Grid */}
-      {filteredArtworks.length > 0 ? (
+      {loading ? (
+        <div className="text-center py-20 text-[#5A5E57]">Loading artwork collection…</div>
+      ) : filteredArtworks.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
           {filteredArtworks.map((artwork, idx) => (
             <ArtworkCard

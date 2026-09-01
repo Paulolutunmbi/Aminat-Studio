@@ -1,14 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { INITIAL_SETTINGS } from '../../data/initialData';
+import { Logo } from './Logo';
 
 export const Footer: React.FC = () => {
+  const contactInfo = INITIAL_SETTINGS;
+
   return (
     <footer className="bg-[#F0EFEA] border-t border-[#E7E7E2] py-20 px-6 md:px-20 mt-auto">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-12">
         <div>
-          <span className="font-serif text-2xl italic block mb-4 text-[#1A1A1A]">
-            Aminat Studio
-          </span>
+          <Link to="/" className="block w-44 mb-4 hover:opacity-75 transition-opacity">
+            <Logo className="w-full h-auto" />
+          </Link>
           <p className="text-sm leading-relaxed text-[#5A5E57] max-w-sm">
             An emerging, self-taught artist inspired by nature, exploring the world through acrylics,
             watercolours, and mixed media.
@@ -21,13 +25,13 @@ export const Footer: React.FC = () => {
           </span>
           <div className="flex flex-wrap gap-6 text-sm text-[#1A1A1A]">
             <a
-              href="mailto:aminatstudio.art@gmail.com"
+              href={`mailto:${contactInfo.email}`}
               className="hover:text-[#8A9A5B] hover:underline transition-colors"
             >
               Email
             </a>
             <a
-              href="https://www.youtube.com/@AminatStudio"
+              href={contactInfo.youtube}
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-[#8A9A5B] hover:underline transition-colors"
@@ -35,19 +39,13 @@ export const Footer: React.FC = () => {
               YouTube
             </a>
             <a
-              href="https://www.tiktok.com/@aminatstudio"
+              href={contactInfo.tiktok}
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-[#8A9A5B] hover:underline transition-colors"
             >
               TikTok
             </a>
-            <Link
-              to="/admin"
-              className="text-[#737871] hover:text-[#8A9A5B] hover:underline text-xs self-center transition-colors"
-            >
-              Portal Login
-            </Link>
           </div>
         </div>
 

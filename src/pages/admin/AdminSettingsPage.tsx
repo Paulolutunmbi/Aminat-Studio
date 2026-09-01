@@ -170,7 +170,7 @@ export const AdminSettingsPage: React.FC = () => {
               type="url"
               value={settings.youtube}
               onChange={(e) => setSettings({ ...settings, youtube: e.target.value })}
-              placeholder="https://www.youtube.com/@AminatStudio"
+              placeholder="https://youtube.com/@amesmeenah26"
               className="w-full bg-[#FFFFFF] border border-[#E7E7E2] p-2.5 text-xs text-[#1A1A1A] focus:outline-none focus:border-[#8A9A5B]"
             />
           </div>
@@ -183,7 +183,7 @@ export const AdminSettingsPage: React.FC = () => {
               type="url"
               value={settings.tiktok}
               onChange={(e) => setSettings({ ...settings, tiktok: e.target.value })}
-              placeholder="https://www.tiktok.com/@aminatstudio"
+              placeholder="https://www.tiktok.com/@m.nh1450"
               className="w-full bg-[#FFFFFF] border border-[#E7E7E2] p-2.5 text-xs text-[#1A1A1A] focus:outline-none focus:border-[#8A9A5B]"
             />
           </div>

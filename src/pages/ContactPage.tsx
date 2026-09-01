@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Mail, Send, CheckCircle2, AlertCircle, Loader2, ArrowUpRight } from 'lucide-react';
+import { INITIAL_SETTINGS } from '../data/initialData';
 import { dataService } from '../services/dataService';
 
 export const ContactPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const initialSubject = searchParams.get('subject') || '';
+  const contactInfo = INITIAL_SETTINGS;
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -147,11 +149,11 @@ export const ContactPage: React.FC = () => {
               Direct Inquiries
             </span>
             <a
-              href="mailto:aminatstudio.art@gmail.com"
+              href={`mailto:${contactInfo.email}`}
               className="font-serif text-2xl text-[#1A1A1A] italic hover:text-[#8A9A5B] flex items-center gap-2 transition-colors break-all"
             >
               <Mail className="w-5 h-5 text-[#8A9A5B] shrink-0" />
-              <span>aminatstudio.art@gmail.com</span>
+              <span>{contactInfo.email}</span>
             </a>
             <p className="text-sm text-[#5A5E57] mt-2 font-sans">
               Emails are answered directly by Aminat within 2 to 3 business days.
@@ -164,7 +166,7 @@ export const ContactPage: React.FC = () => {
             </span>
             <div className="space-y-3">
               <a
-                href="https://www.youtube.com/@AminatStudio"
+                href={contactInfo.youtube}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-4 bg-[#F5F5F2] hover:bg-[#E8EDE0]/60 transition-colors border border-[#E7E7E2] hover:border-[#8A9A5B]/40"
@@ -177,7 +179,7 @@ export const ContactPage: React.FC = () => {
               </a>
 
               <a
-                href="https://www.tiktok.com/@aminatstudio"
+                href={contactInfo.tiktok}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-4 bg-[#F5F5F2] hover:bg-[#E8EDE0]/60 transition-colors border border-[#E7E7E2] hover:border-[#8A9A5B]/40"

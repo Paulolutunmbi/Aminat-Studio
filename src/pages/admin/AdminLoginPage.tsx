@@ -6,8 +6,8 @@ import { useAuth } from '../../context/AuthContext';
 export const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [username, setUsername] = useState('aminat');
-  const [password, setPassword] = useState('nature2024');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -17,11 +17,11 @@ export const AdminLoginPage: React.FC = () => {
     setLoading(true);
 
     try {
-      const success = await login(username, password);
+      const success = await login(email, password);
       if (success) {
         navigate('/admin');
       } else {
-        setError('Please enter a valid username and password.');
+        setError('Please enter a valid admin email and password.');
       }
     } catch {
       setError('Authentication failed. Please try again.');
@@ -30,15 +30,8 @@ export const AdminLoginPage: React.FC = () => {
     }
   };
 
-  const handleFillDemo = () => {
-    setUsername('aminat');
-    setPassword('nature2024');
-    setError('');
-  };
-
   return (
     <div className="min-h-screen bg-[#F9F9F7] flex flex-col justify-center items-center p-6 text-[#1A1A1A]">
-      {/* Return to Public Website */}
       <div className="w-full max-w-md mb-6">
         <Link
           to="/"
@@ -49,7 +42,6 @@ export const AdminLoginPage: React.FC = () => {
         </Link>
       </div>
 
-      {/* Login Card */}
       <div className="w-full max-w-md bg-[#FFFFFF] p-8 md:p-10 border border-[#E7E7E2] shadow-md space-y-6">
         <div className="text-center space-y-2">
           <div className="inline-flex p-3 bg-[#E8EDE0] rounded-full text-[#8A9A5B] mb-2">
@@ -63,23 +55,15 @@ export const AdminLoginPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Demo Helper Banner */}
         <div className="bg-[#E8EDE0]/40 p-3.5 border border-[#8A9A5B]/30 text-xs text-[#5A5E57] space-y-2">
           <div className="flex items-center justify-between">
             <span className="font-semibold text-[#1A1A1A] flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-[#8A9A5B]" />
               Admin Access
             </span>
-            <button
-              type="button"
-              onClick={handleFillDemo}
-              className="text-[#8A9A5B] hover:underline font-semibold text-[11px] uppercase tracking-wider"
-            >
-              Fill Credentials
-            </button>
           </div>
           <p className="text-[11px] leading-relaxed text-[#737871]">
-            Protected artist area. Test username: <strong className="text-[#1A1A1A]">aminat</strong> | password: <strong className="text-[#1A1A1A]">nature2024</strong>
+            Use the admin email and password configured for this backend instance.
           </p>
         </div>
 
@@ -93,13 +77,13 @@ export const AdminLoginPage: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs uppercase tracking-wider font-semibold text-[#1A1A1A] mb-1.5">
-              Username
+              Email
             </label>
             <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@example.com"
               className="w-full bg-[#FFFFFF] border border-[#E7E7E2] p-3 text-sm text-[#1A1A1A] focus:outline-none focus:border-[#8A9A5B]"
               required
             />
@@ -117,6 +101,12 @@ export const AdminLoginPage: React.FC = () => {
               className="w-full bg-[#FFFFFF] border border-[#E7E7E2] p-3 text-sm text-[#1A1A1A] focus:outline-none focus:border-[#8A9A5B]"
               required
             />
+          </div>
+
+          <div className="flex justify-end">
+            <Link to="/admin/forgot-password" className="text-[11px] uppercase tracking-[0.14em] text-[#8A9A5B] hover:underline">
+              Forgot password?
+            </Link>
           </div>
 
           <button

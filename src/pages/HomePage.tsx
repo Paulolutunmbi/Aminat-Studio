@@ -12,30 +12,51 @@ export const HomePage: React.FC = () => {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [photos, setPhotos] = useState<NaturePhoto[]>([]);
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
-      const [artList, photoList] = await Promise.all([
-        dataService.getArtworks(),
-        dataService.getPhotos(),
-      ]);
-      setArtworks(artList);
-      setPhotos(photoList);
+      try {
+        setLoading(true);
+        setError(null);
+        const [artList, photoList] = await Promise.all([
+          dataService.getArtworks(),
+          dataService.getPhotos(),
+        ]);
+        setArtworks(artList);
+        setPhotos(photoList);
+      } catch (err: any) {
+        setError(err?.message || 'The featured artwork collection is currently unavailable.');
+        setArtworks([]);
+      } finally {
+        setLoading(false);
+      }
     };
     loadData();
   }, []);
 
   return (
     <div>
+      {error && (
+        <div className="mx-6 md:mx-20 mt-6 border border-amber-200 bg-amber-50 text-amber-800 text-sm p-4">
+          {error}
+        </div>
+      )}
+
       <Hero
         heroImage1="/images/artwork/paint-with-me.jpg"
         heroImage2="/images/artwork/the-path.jpg"
       />
 
-      <FeaturedWorks
-        artworks={artworks}
-        onSelectArtwork={(art) => setSelectedArtwork(art)}
-      />
+      {loading ? (
+        <div className="py-12 text-center text-[#5A5E57]">Loading featured works…</div>
+      ) : (
+        <FeaturedWorks
+          artworks={artworks}
+          onSelectArtwork={(art) => setSelectedArtwork(art)}
+        />
+      )}
 
       <AboutPreview image="/images/artwork/artists-journey.jpg" />
 
