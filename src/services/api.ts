@@ -1,14 +1,17 @@
 import { Artwork } from '../types';
 
-const DEFAULT_API_BASE = 'http://localhost:5000/api';
+const DEFAULT_API_BASE = '/api';
+const PRODUCTION_API_BASE = 'https://aminat-studio-backend.onrender.com/api';
 
 const apiBaseUrl = (() => {
-  const configured = ((import.meta as any).env?.VITE_API_URL as string | undefined)?.trim();
+  const env = (import.meta as any).env || {};
+  const configured = (env.VITE_API_URL as string | undefined)?.trim();
   if (configured) {
-    return configured.replace(/\/$/, '');
+    const normalized = configured.replace(/\/$/, '');
+    return normalized.endsWith('/api') ? normalized : `${normalized}/api`;
   }
 
-  return DEFAULT_API_BASE;
+  return env.PROD ? PRODUCTION_API_BASE : DEFAULT_API_BASE;
 })();
 
 const buildUrl = (path: string) => {
@@ -49,8 +52,12 @@ const parseApiResponse = async <T>(response: Response): Promise<T> => {
   const payload = await response.json().catch(() => null);
 
   if (!response.ok) {
-    const message = payload?.message || `Request failed with status ${response.status}`;
+    const message = typeof payload?.message === 'string' ? payload.message : `Request failed with status ${response.status}`;
     throw new Error(message);
+  }
+
+  if (payload === null) {
+    throw new Error('The backend returned an invalid response. Please try again.');
   }
 
   if (payload && typeof payload === 'object' && 'data' in payload) {
@@ -60,17 +67,25 @@ const parseApiResponse = async <T>(response: Response): Promise<T> => {
   return (payload as T) ?? (undefined as T);
 };
 
-const apiRequest = async <T>(path: string, options: RequestInit = {}): Promise<T> => {
-  const response = await fetch(buildUrl(path), {
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
-    ...options,
-  });
+const apiRequest = async <T>(path: string, options: RequestInit = {}, includeCredentials = false): Promise<T> => {
+  try {
+    const response = await fetch(buildUrl(path), {
+      ...options,
+      ...(includeCredentials ? { credentials: 'include' as RequestCredentials } : {}),
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers || {}),
+      },
+    });
 
-  return parseApiResponse<T>(response);
+    return parseApiResponse<T>(response);
+  } catch (error) {
+    if (error instanceof Error && error.message !== 'Failed to fetch') {
+      throw error;
+    }
+
+    throw new Error('Unable to reach the backend. It may be starting up; please try again shortly.');
+  }
 };
 
 type ApiResponse<T> = T & { success?: boolean; message?: string; authenticated?: boolean };
@@ -95,7 +110,7 @@ export const api = {
     const result = await apiRequest<ApiResponse<{ data?: any }>>('/artworks', {
       method: 'POST',
       body: JSON.stringify(body),
-    });
+    }, true);
 
     return result && result.data ? normalizeArtwork(result.data) : normalizeArtwork(body);
   },
@@ -108,20 +123,20 @@ export const api = {
     const result = await apiRequest<ApiResponse<{ data?: any }>>('/artworks/' + id, {
       method: 'PUT',
       body: JSON.stringify(body),
-    });
+    }, true);
 
     return result && result.data ? normalizeArtwork(result.data) : normalizeArtwork(body);
   },
 
   deleteArtwork: async (id: string): Promise<boolean> => {
-    await apiRequest('/artworks/' + id, { method: 'DELETE' });
+    await apiRequest('/artworks/' + id, { method: 'DELETE' }, true);
     return true;
   },
 
   toggleFeatured: async (id: string): Promise<Artwork> => {
     const result = await apiRequest<ApiResponse<{ data?: any }>>('/artworks/' + id + '/toggle-featured', {
       method: 'PATCH',
-    });
+    }, true);
 
     return result && result.data ? normalizeArtwork(result.data) : normalizeArtwork({ id });
   },
@@ -130,7 +145,7 @@ export const api = {
     const result = await apiRequest<ApiResponse<{ data?: any }>>('/artworks/' + artworkId, {
       method: 'PUT',
       body: JSON.stringify({ order, sortOrder: order }),
-    });
+    }, true);
 
     return result && result.data ? normalizeArtwork(result.data) : normalizeArtwork({ id: artworkId, order, sortOrder: order });
   },
@@ -153,24 +168,24 @@ export const api = {
     return apiRequest('/settings', {
       method: 'PUT',
       body: JSON.stringify(payload),
-    });
+    }, true);
   },
 
   getAdminStatus: async (): Promise<{ authenticated: boolean }> => {
-    return apiRequest<{ authenticated: boolean }>('/admin/status');
+    return apiRequest<{ authenticated: boolean }>('/admin/status', {}, true);
   },
 
   loginAdmin: async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
     return apiRequest<{ success: boolean; message?: string }>('/admin/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
-    });
+    }, true);
   },
 
   logoutAdmin: async (): Promise<{ success: boolean; message?: string }> => {
     return apiRequest<{ success: boolean; message?: string }>('/admin/logout', {
       method: 'POST',
-    });
+    }, true);
   },
 
   forgotPassword: async (email: string): Promise<{ success: boolean; message?: string }> => {
