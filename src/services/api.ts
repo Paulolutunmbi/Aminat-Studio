@@ -175,6 +175,13 @@ export const api = {
     return apiRequest<{ authenticated: boolean }>('/admin/status', {}, true);
   },
 
+  setupAdmin: async (newPassword: string, confirmPassword: string): Promise<{ success: boolean; message?: string }> => {
+    return apiRequest<{ success: boolean; message?: string }>('/admin/setup', {
+      method: 'POST',
+      body: JSON.stringify({ newPassword, confirmPassword }),
+    });
+  },
+
   loginAdmin: async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
     return apiRequest<{ success: boolean; message?: string }>('/admin/login', {
       method: 'POST',
