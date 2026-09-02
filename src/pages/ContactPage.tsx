@@ -3,6 +3,37 @@ import { useSearchParams } from 'react-router-dom';
 import { Mail, Send, CheckCircle2, AlertCircle, Loader2, ArrowUpRight } from 'lucide-react';
 import { dataService } from '../services/dataService';
 
+const INQUIRY_RECIPIENT = 'aminatstudio0@gmail.com';
+
+export const buildInquiryMailto = ({
+  name,
+  email,
+  message,
+  artwork,
+}: {
+  name: string;
+  email: string;
+  message: string;
+  artwork?: string;
+}) => {
+  const trimmedName = name.trim();
+  const subject = trimmedName
+    ? `Artwork Inquiry from ${trimmedName}`
+    : 'Inquiry from Aminat Studio Website';
+  const bodyLines = [
+    `Name: ${trimmedName || 'Not provided'}`,
+    `Email: ${email.trim() || 'Not provided'}`,
+  ];
+
+  if (artwork?.trim()) {
+    bodyLines.push(`Artwork: ${artwork.trim()}`);
+  }
+
+  bodyLines.push(`Message: ${message.trim() || 'No message provided.'}`);
+
+  return `mailto:${INQUIRY_RECIPIENT}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join('\n\n'))}`;
+};
+
 export const ContactPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const initialSubject = searchParams.get('subject') || '';
@@ -45,51 +76,32 @@ export const ContactPage: React.FC = () => {
     }
   }, [initialSubject]);
 
-  const buildMailtoLink = () => {
-    const recipient = 'aminatstudio0@gmail.com';
-    const subject = name.trim()
-      ? `Artwork Inquiry from ${name.trim()}`
-      : 'Inquiry from Aminat Studio Website';
-
-    const cleanMessage = message.trim();
-    const bodyLines = [
-      `Name: ${name.trim() || 'Not provided'}`,
-      `Email: ${email.trim() || 'Not provided'}`,
-    ];
-
+  const getArtworkFromSubject = () => {
     const artMatch = initialSubject?.match(/Inquiry regarding (.+)$/i);
-    if (artMatch?.[1]) {
-      bodyLines.push(`Artwork: ${artMatch[1].trim()}`);
-    }
-
-    bodyLines.push(`Message: ${cleanMessage || 'No message provided.'}`);
-
-    const mailto = new URL(`mailto:${recipient}`);
-    mailto.searchParams.set('subject', subject);
-    mailto.searchParams.set('body', bodyLines.join('\n\n'));
-    return mailto.toString();
+    return artMatch?.[1]?.trim();
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!message.trim()) {
+    if (!name.trim() || !email.trim() || !message.trim()) {
       setStatus('error');
-      setStatusMessage('Please enter a message before sending.');
+      setStatusMessage('Please complete your name, email address, and message before sending.');
       return;
     }
 
     setStatus('loading');
     try {
-      window.location.href = buildMailtoLink();
+      window.location.href = buildInquiryMailto({
+        name,
+        email,
+        message,
+        artwork: getArtworkFromSubject(),
+      });
       setStatus('success');
-      setStatusMessage('Your email app has been opened with your inquiry ready to send.');
-      setTimeout(() => {
-        setStatus('idle');
-        setStatusMessage('');
-      }, 3000);
+      setStatusMessage('Your email app should open with your inquiry ready to send. If it does not, copy aminatstudio0@gmail.com and send your inquiry manually.');
     } catch {
       setStatus('error');
-      setStatusMessage('Unable to open your email app. Please email Aminat directly at aminatstudio0@gmail.com.');
+      setStatusMessage('Unable to open your email app. Please copy aminatstudio0@gmail.com and send your inquiry manually.');
     }
   };
 
@@ -178,7 +190,12 @@ export const ContactPage: React.FC = () => {
           {status === 'success' && (
             <div className="mt-6 flex items-center gap-3 p-4 bg-[#E8EDE0] text-[#1A1C19] text-sm border border-[#8A9A5B]/40 rounded-xs">
               <CheckCircle2 className="w-5 h-5 text-[#8A9A5B] shrink-0" />
-              <span>{statusMessage}</span>
+              <span>
+                {statusMessage}{' '}
+                <a href={`mailto:${INQUIRY_RECIPIENT}`} className="underline font-semibold">
+                  {INQUIRY_RECIPIENT}
+                </a>
+              </span>
             </div>
           )}
 

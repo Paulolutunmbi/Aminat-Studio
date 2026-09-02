@@ -500,7 +500,7 @@ export const AdminArtworksPage: React.FC = () => {
                 </label>
               </div>
 
-              </div>
+                </div>
 
               {/* Actions */}
               <div className="flex shrink-0 justify-end gap-3 p-6 md:px-8 md:py-5 border-t border-[#E7E7E2] bg-[#FFFFFF]">
