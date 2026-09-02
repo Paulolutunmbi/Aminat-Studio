@@ -7,7 +7,7 @@ import { GalleryPage } from './pages/GalleryPage';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
-import { AdminSetupPage } from './pages/admin/AdminSetupPage';
+import { AdminChangePasswordPage } from './pages/admin/AdminChangePasswordPage';
 import { AdminForgotPasswordPage } from './pages/admin/AdminForgotPasswordPage';
 import { AdminResetPasswordPage } from './pages/admin/AdminResetPasswordPage';
 import { ProtectedRoute } from './components/admin/ProtectedRoute';
@@ -33,8 +33,8 @@ export default function App() {
           </Route>
 
           {/* Admin Authentication */}
-          <Route path="/admin/setup" element={<AdminSetupPage />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route path="/admin/change-password" element={<AdminChangePasswordPage />} />
           <Route path="/admin/forgot-password" element={<AdminForgotPasswordPage />} />
           <Route path="/admin/reset-password" element={<AdminResetPasswordPage />} />
           <Route path="/reset-password" element={<AdminResetPasswordPage />} />

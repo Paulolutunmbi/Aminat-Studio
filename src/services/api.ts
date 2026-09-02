@@ -171,21 +171,21 @@ export const api = {
     }, true);
   },
 
-  getAdminStatus: async (): Promise<{ authenticated: boolean }> => {
-    return apiRequest<{ authenticated: boolean }>('/admin/status', {}, true);
+  getAdminStatus: async (): Promise<{ authenticated: boolean; mustChangePassword?: boolean }> => {
+    return apiRequest<{ authenticated: boolean; mustChangePassword?: boolean }>('/admin/status', {}, true);
   },
 
-  setupAdmin: async (newPassword: string, confirmPassword: string): Promise<{ success: boolean; message?: string }> => {
-    return apiRequest<{ success: boolean; message?: string }>('/admin/setup', {
-      method: 'POST',
-      body: JSON.stringify({ newPassword, confirmPassword }),
-    });
-  },
-
-  loginAdmin: async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
+  loginAdmin: async (email: string, password: string): Promise<{ success: boolean; message?: string; mustChangePassword?: boolean }> => {
     return apiRequest<{ success: boolean; message?: string }>('/admin/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
+    }, true);
+  },
+
+  changeAdminPassword: async (currentPassword: string, newPassword: string, confirmPassword: string): Promise<{ success: boolean; message?: string }> => {
+    return apiRequest<{ success: boolean; message?: string }>('/admin/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ currentPassword, newPassword, confirmPassword }),
     }, true);
   },
 
