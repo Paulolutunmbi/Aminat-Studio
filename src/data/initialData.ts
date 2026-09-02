@@ -121,7 +121,7 @@ export const INITIAL_SETTINGS: StudioSettings = {
   studioName: 'Aminat Studio',
   artistName: 'Aminat',
   description: 'An emerging, self-taught artist inspired by nature.',
-  email: 'akinolaaminat27@gmail.com',
+  email: 'aminatstudio0@gmail.com',
   youtube: 'https://youtube.com/@amesmeenah26',
   tiktok: 'https://www.tiktok.com/@m.nh1450',
   profileImage: '/images/profile/aminat-profile.jpg',

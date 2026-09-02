@@ -20,8 +20,19 @@ export const AdminFeaturedPage: React.FC = () => {
   }, []);
 
   const handleToggle = async (id: string) => {
-    await dataService.toggleFeatured(id);
-    await load();
+    try {
+      const current = artworks.find((item) => item.id === id);
+      const featuredCount = artworks.filter((item) => item.featured).length;
+      const nextValue = !(current?.featured ?? false);
+      if (nextValue && featuredCount >= 3) {
+        alert('Only 3 artworks can be featured at a time. Please remove one of the current featured artworks before featuring another.');
+        return;
+      }
+      await dataService.toggleFeatured(id);
+      await load();
+    } catch (error: any) {
+      alert(error?.message || 'Unable to update featured artwork status.');
+    }
   };
 
   const featured = artworks.filter((a) => a.featured);
@@ -72,7 +83,7 @@ export const AdminFeaturedPage: React.FC = () => {
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-[#8A9A5B]" />
           <span className="text-xs uppercase tracking-wider font-semibold text-[#1A1A1A]">
-            Currently Featured: {featured.length} {featured.length === 1 ? 'artwork' : 'artworks'}
+            {featured.length} / 3 Featured
           </span>
         </div>
         <span className="text-xs text-[#737871]">

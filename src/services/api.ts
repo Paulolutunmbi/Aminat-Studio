@@ -36,6 +36,8 @@ const normalizeArtwork = (item: any): Artwork => {
     createdAt: typeof item?.createdAt === 'string' ? item.createdAt : new Date().toISOString(),
     year: item?.year !== undefined && item?.year !== null ? String(item.year) : undefined,
     dimensions: typeof item?.dimensions === 'string' ? item.dimensions : undefined,
+    order: item?.order !== undefined && item?.order !== null ? Number(item.order) : undefined,
+    sortOrder: item?.sortOrder !== undefined && item?.sortOrder !== null ? Number(item.sortOrder) : undefined,
   };
 };
 
@@ -122,6 +124,36 @@ export const api = {
     });
 
     return result && result.data ? normalizeArtwork(result.data) : normalizeArtwork({ id });
+  },
+
+  updateArtworkOrder: async (artworkId: string, order: number): Promise<Artwork> => {
+    const result = await apiRequest<ApiResponse<{ data?: any }>>('/artworks/' + artworkId, {
+      method: 'PUT',
+      body: JSON.stringify({ order, sortOrder: order }),
+    });
+
+    return result && result.data ? normalizeArtwork(result.data) : normalizeArtwork({ id: artworkId, order, sortOrder: order });
+  },
+
+  getSettings: async (): Promise<{ studioName: string; artistName: string; description: string; email: string; youtube: string; tiktok: string; profileImage: string }> => {
+    const result = await apiRequest<ApiResponse<{ data?: any }>>('/settings');
+    const data = result && result.data ? result.data : {};
+    return {
+      studioName: typeof data.studioName === 'string' ? data.studioName : 'Aminat Studio',
+      artistName: typeof data.artistName === 'string' ? data.artistName : 'Aminat',
+      description: typeof data.description === 'string' ? data.description : 'An emerging, self-taught artist inspired by nature.',
+      email: typeof data.email === 'string' ? data.email : 'aminatstudio0@gmail.com',
+      youtube: typeof data.youtube === 'string' ? data.youtube : '',
+      tiktok: typeof data.tiktok === 'string' ? data.tiktok : '',
+      profileImage: typeof data.profileImage === 'string' ? data.profileImage : '/images/profile/aminat-profile.jpg',
+    };
+  },
+
+  updateSettings: async (payload: Record<string, any>): Promise<any> => {
+    return apiRequest('/settings', {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    });
   },
 
   getAdminStatus: async (): Promise<{ authenticated: boolean }> => {

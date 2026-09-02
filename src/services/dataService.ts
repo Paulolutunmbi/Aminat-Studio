@@ -4,26 +4,16 @@ import { api } from './api';
 
 export const dataService = {
   async getArtworks(): Promise<Artwork[]> {
-    try {
-      return await api.getArtworks();
-    } catch (error) {
-      console.error('Failed to fetch artworks from API:', error);
-      return [];
-    }
+    return await api.getArtworks();
   },
 
   async getFeaturedArtworks(): Promise<Artwork[]> {
     const artworks = await this.getArtworks();
-    return artworks.filter((a) => a.featured);
+    return artworks.filter((a) => a.featured).sort((a, b) => Number(a.order ?? a.sortOrder ?? 0) - Number(b.order ?? b.sortOrder ?? 0));
   },
 
   async getArtworkById(id: string): Promise<Artwork | null> {
-    try {
-      return await api.getArtworkById(id);
-    } catch (error) {
-      console.error('Failed to fetch artwork by id:', error);
-      return null;
-    }
+    return await api.getArtworkById(id);
   },
 
   async createArtwork(data: Partial<Artwork> & Record<string, any>): Promise<Artwork> {
@@ -42,16 +32,23 @@ export const dataService = {
     return api.toggleFeatured(id);
   },
 
+  async reorderArtwork(id: string, newOrder: number): Promise<Artwork> {
+    return api.updateArtworkOrder(id, newOrder);
+  },
+
   async getPhotos(): Promise<NaturePhoto[]> {
     return INITIAL_PHOTOS;
   },
 
   async getSubscribers(): Promise<Subscriber[]> {
-    return INITIAL_SUBSCRIBERS;
+    return [];
   },
 
   async addSubscriber(email: string): Promise<{ success: boolean; message: string }> {
-    return { success: true, message: 'Thank you for subscribing to updates.' };
+    return {
+      success: false,
+      message: 'Newsletter signup is temporarily disabled while production email delivery is being configured.',
+    };
   },
 
   async deleteSubscriber(id: string): Promise<boolean> {
@@ -59,7 +56,7 @@ export const dataService = {
   },
 
   async getMessages(): Promise<Message[]> {
-    return INITIAL_MESSAGES;
+    return [];
   },
 
   async addMessage(name: string, email: string, message: string): Promise<Message> {
@@ -82,11 +79,30 @@ export const dataService = {
   },
 
   async getSettings(): Promise<StudioSettings> {
-    return INITIAL_SETTINGS;
+    const settings = await api.getSettings();
+    return {
+      studioName: settings.studioName || INITIAL_SETTINGS.studioName,
+      artistName: settings.artistName || INITIAL_SETTINGS.artistName,
+      description: settings.description || INITIAL_SETTINGS.description,
+      email: settings.email || 'aminatstudio0@gmail.com',
+      youtube: settings.youtube || '',
+      tiktok: settings.tiktok || '',
+      profileImage: settings.profileImage || INITIAL_SETTINGS.profileImage,
+    };
   },
 
   async updateSettings(settings: Partial<StudioSettings>): Promise<StudioSettings> {
-    return { ...INITIAL_SETTINGS, ...settings };
+    const result = await api.updateSettings(settings);
+    const data = result && result.data ? result.data : settings;
+    return {
+      studioName: data.studioName || INITIAL_SETTINGS.studioName,
+      artistName: data.artistName || INITIAL_SETTINGS.artistName,
+      description: data.description || INITIAL_SETTINGS.description,
+      email: data.email || 'aminatstudio0@gmail.com',
+      youtube: data.youtube || '',
+      tiktok: data.tiktok || '',
+      profileImage: data.profileImage || INITIAL_SETTINGS.profileImage,
+    };
   },
 
   async resetToDefaults(): Promise<void> {

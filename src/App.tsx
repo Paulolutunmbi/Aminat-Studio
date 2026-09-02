@@ -34,6 +34,7 @@ export default function App() {
           {/* Admin Authentication */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin/forgot-password" element={<AdminForgotPasswordPage />} />
+          <Route path="/admin/reset-password" element={<AdminResetPasswordPage />} />
           <Route path="/reset-password" element={<AdminResetPasswordPage />} />
 
           {/* Protected Admin Routes */}

@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Save, CheckCircle2, RotateCcw, Loader2 } from 'lucide-react';
+import { Save, CheckCircle2, Loader2 } from 'lucide-react';
 import { StudioSettings } from '../../types';
 import { dataService } from '../../services/dataService';
 import { ImageUploader } from '../../components/admin/ImageUploader';
-import { ConfirmDialog } from '../../components/admin/ConfirmDialog';
 
 export const AdminSettingsPage: React.FC = () => {
   const [settings, setSettings] = useState<StudioSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
-  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
   useEffect(() => {
     const load = async () => {
@@ -26,25 +25,17 @@ export const AdminSettingsPage: React.FC = () => {
     e.preventDefault();
     if (!settings) return;
     setSaving(true);
+    setSaveError('');
     try {
-      await dataService.updateSettings(settings);
+      const result = await dataService.updateSettings(settings);
+      setSettings((prev) => ({ ...(prev ?? settings), ...result }));
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 3000);
-    } catch {
-      alert('Failed to save settings.');
+    } catch (error: any) {
+      setSaveError(error?.message || 'Failed to save settings.');
     } finally {
       setSaving(false);
     }
-  };
-
-  const handleResetDefaults = async () => {
-    setIsResetConfirmOpen(false);
-    setLoading(true);
-    await dataService.resetToDefaults();
-    const data = await dataService.getSettings();
-    setSettings(data);
-    setLoading(false);
-    alert('Studio data has been restored to default artwork, inquiries, and settings.');
   };
 
   if (loading || !settings) {
@@ -69,15 +60,6 @@ export const AdminSettingsPage: React.FC = () => {
           </h1>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsResetConfirmOpen(true)}
-          className="border border-[#E7E7E2] bg-[#FFFFFF] text-xs uppercase tracking-wider font-medium text-[#737871] hover:text-red-700 hover:border-red-300 px-3 py-1.5 flex items-center gap-1.5 self-start sm:self-auto transition-colors shadow-xs"
-          title="Reset all mock data to original factory state"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>Reset Demo Data</span>
-        </button>
       </div>
 
       {savedSuccess && (
@@ -85,6 +67,10 @@ export const AdminSettingsPage: React.FC = () => {
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>Studio settings updated successfully.</span>
         </div>
+      )}
+
+      {saveError && (
+        <div className="p-4 bg-red-50 border border-red-200 text-red-700 text-xs">{saveError}</div>
       )}
 
       {/* Settings Form */}
@@ -201,16 +187,6 @@ export const AdminSettingsPage: React.FC = () => {
           </button>
         </div>
       </form>
-
-      {/* Confirm Reset Dialog */}
-      <ConfirmDialog
-        isOpen={isResetConfirmOpen}
-        title="Reset to Factory Data"
-        message="This will restore all default artwork, subscribers, messages, and settings. Any custom changes created in this session will be replaced with the original initial dataset."
-        confirmLabel="Reset Everything"
-        onConfirm={handleResetDefaults}
-        onCancel={() => setIsResetConfirmOpen(false)}
-      />
     </div>
   );
 };

@@ -12,11 +12,29 @@ export const FeaturedWorks: React.FC<FeaturedWorksProps> = ({
   onSelectArtwork,
 }) => {
   const featured = artworks.filter((a) => a.featured);
-  const displayItems = featured.length >= 3 ? featured.slice(0, 3) : artworks.slice(0, 3);
+  const displayItems = featured.slice(0, 3);
 
   const item1 = displayItems[0];
   const item2 = displayItems[1];
   const item3 = displayItems[2];
+
+  if (displayItems.length === 0) {
+    return (
+      <section className="py-24 px-6 md:px-20 max-w-7xl mx-auto border-t border-[#E7E7E2]">
+        <div className="max-w-3xl mx-auto text-center">
+          <span className="text-xs uppercase tracking-[0.15em] text-[#5A5E57] font-semibold block mb-2">
+            Curated Selection
+          </span>
+          <h2 className="font-serif text-3xl md:text-4xl text-[#1A1A1A] italic">
+            Featured Works
+          </h2>
+          <p className="mt-4 text-sm text-[#5A5E57]">
+            No featured artworks are currently available in the studio collection.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-24 px-6 md:px-20 max-w-7xl mx-auto border-t border-[#E7E7E2]">

@@ -11,6 +11,7 @@ import {
   X,
   Loader2,
   Eye,
+  GripVertical,
 } from 'lucide-react';
 import { Artwork } from '../../types';
 import { dataService } from '../../services/dataService';
@@ -23,6 +24,7 @@ export const AdminArtworksPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
+  const [reorderingId, setReorderingId] = useState<string | null>(null);
 
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -133,7 +135,39 @@ export const AdminArtworksPage: React.FC = () => {
   };
 
   const handleToggleFeatured = async (id: string) => {
-    await dataService.toggleFeatured(id);
+    try {
+      const current = artworks.find((item) => item.id === id);
+      const featuredCount = artworks.filter((item) => item.featured).length;
+      const newFeaturedState = !(current?.featured ?? false);
+      if (newFeaturedState && featuredCount >= 3) {
+        alert('Only 3 artworks can be featured at a time. Please remove one of the current featured artworks before featuring another.');
+        return;
+      }
+
+      await dataService.toggleFeatured(id);
+      await loadArtworks();
+    } catch (error: any) {
+      alert(error?.message || 'Unable to update featured artwork status.');
+    }
+  };
+
+  const handleReorder = async (dragId: string, targetId: string) => {
+    if (dragId === targetId) return;
+
+    const next = [...artworks];
+    const fromIndex = next.findIndex((item) => item.id === dragId);
+    const toIndex = next.findIndex((item) => item.id === targetId);
+    if (fromIndex === -1 || toIndex === -1) return;
+
+    const [moved] = next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, moved);
+
+    const sorted = next.map((item, index) => ({ ...item, order: index, sortOrder: index }));
+    setArtworks(sorted);
+
+    for (const item of sorted) {
+      await dataService.reorderArtwork(item.id, item.order ?? 0);
+    }
     await loadArtworks();
   };
 
@@ -234,24 +268,38 @@ export const AdminArtworksPage: React.FC = () => {
               </tr>
             ) : (
               filteredArtworks.map((art) => (
-                <tr key={art.id} className="hover:bg-[#F9F9F7]/70 transition-colors">
-                  {/* Artwork Preview & Title */}
+                <tr
+                  key={art.id}
+                  draggable={true}
+                  onDragStart={() => setReorderingId(art.id)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => {
+                    if (reorderingId && reorderingId !== art.id) {
+                      handleReorder(reorderingId, art.id);
+                    }
+                    setReorderingId(null);
+                  }}
+                  className="hover:bg-[#F9F9F7]/70 transition-colors"
+                >
                   <td className="py-3.5 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-14 h-14 bg-[#F5F5F2] border border-[#1A1C19] shrink-0 overflow-hidden flex items-center justify-center">
-                        <img
-                          src={art.image}
-                          alt={art.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div>
-                        <span className="font-serif font-medium text-base text-[#1A1A1A] block">
-                          {art.title}
-                        </span>
-                        {art.dimensions && (
-                          <span className="text-xs text-[#737871]">{art.dimensions}</span>
-                        )}
+                    <div className="flex items-center gap-2">
+                      <GripVertical className="w-4 h-4 text-[#737871] cursor-grab" />
+                      <div className="flex items-center gap-3">
+                        <div className="w-14 h-14 bg-[#F5F5F2] border border-[#1A1C19] shrink-0 overflow-hidden flex items-center justify-center">
+                          <img
+                            src={art.image}
+                            alt={art.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <span className="font-serif font-medium text-base text-[#1A1A1A] block">
+                            {art.title}
+                          </span>
+                          {art.dimensions && (
+                            <span className="text-xs text-[#737871]">{art.dimensions}</span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </td>

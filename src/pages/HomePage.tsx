@@ -3,7 +3,7 @@ import { Hero } from '../components/public/Hero';
 import { FeaturedWorks } from '../components/public/FeaturedWorks';
 import { AboutPreview } from '../components/public/AboutPreview';
 import { InspirationSection } from '../components/public/InspirationSection';
-import { NewsletterSection } from '../components/public/NewsletterSection';
+// import { NewsletterSection } from '../components/public/NewsletterSection';
 import { ArtworkDetailModal } from '../components/public/ArtworkDetailModal';
 import { Artwork, NaturePhoto } from '../types';
 import { dataService } from '../services/dataService';
@@ -62,7 +62,10 @@ export const HomePage: React.FC = () => {
 
       <InspirationSection photos={photos} />
 
-      <NewsletterSection />
+      {/*
+        TODO: Re-enable newsletter signup once production email/domain
+        configuration is verified and newsletter delivery is ready.
+      */}
 
       <ArtworkDetailModal
         artwork={selectedArtwork}

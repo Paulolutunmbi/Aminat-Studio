@@ -18,7 +18,7 @@ export const AdminResetPasswordPage: React.FC = () => {
 
     if (!token) {
       setStatus('error');
-      setMessage('Missing reset token. Please request a new reset link.');
+      setMessage('This password reset link is invalid or has expired. Please request a new password reset.');
       return;
     }
 
@@ -36,7 +36,7 @@ export const AdminResetPasswordPage: React.FC = () => {
       const response = await api.resetPassword(token, newPassword);
       if (response?.success) {
         setStatus('success');
-        setMessage(response.message || 'Password reset successful. Please sign in again.');
+        setMessage(response.message || 'Password reset successfully. You can now log in with your new password.');
         setNewPassword('');
         setConfirmPassword('');
       } else {
@@ -76,43 +76,51 @@ export const AdminResetPasswordPage: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs uppercase tracking-wider font-semibold text-[#1A1A1A] mb-1.5">
-              New password
-            </label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Enter a new password"
-              className="w-full bg-[#FFFFFF] border border-[#E7E7E2] p-3 text-sm text-[#1A1A1A] focus:outline-none focus:border-[#8A9A5B]"
-              required
-            />
-          </div>
+        {!status || status !== 'success' ? (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs uppercase tracking-wider font-semibold text-[#1A1A1A] mb-1.5">
+                New password
+              </label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter a new password"
+                className="w-full bg-[#FFFFFF] border border-[#E7E7E2] p-3 text-sm text-[#1A1A1A] focus:outline-none focus:border-[#8A9A5B]"
+                required
+              />
+            </div>
 
-          <div>
-            <label className="block text-xs uppercase tracking-wider font-semibold text-[#1A1A1A] mb-1.5">
-              Confirm password
-            </label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm your password"
-              className="w-full bg-[#FFFFFF] border border-[#E7E7E2] p-3 text-sm text-[#1A1A1A] focus:outline-none focus:border-[#8A9A5B]"
-              required
-            />
-          </div>
+            <div>
+              <label className="block text-xs uppercase tracking-wider font-semibold text-[#1A1A1A] mb-1.5">
+                Confirm password
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm your password"
+                className="w-full bg-[#FFFFFF] border border-[#E7E7E2] p-3 text-sm text-[#1A1A1A] focus:outline-none focus:border-[#8A9A5B]"
+                required
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[#1A1C19] text-[#FFFFFF] py-3.5 px-6 text-xs uppercase tracking-[0.15em] font-semibold hover:bg-[#8A9A5B] transition-colors flex items-center justify-center gap-2 shadow-xs"
-          >
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Update password'}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#1A1C19] text-[#FFFFFF] py-3.5 px-6 text-xs uppercase tracking-[0.15em] font-semibold hover:bg-[#8A9A5B] transition-colors flex items-center justify-center gap-2 shadow-xs"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Update password'}
+            </button>
+          </form>
+        ) : (
+          <div className="space-y-4">
+            <Link to="/admin/login" className="block w-full bg-[#1A1C19] text-[#FFFFFF] py-3.5 px-6 text-xs uppercase tracking-[0.15em] font-semibold text-center hover:bg-[#8A9A5B] transition-colors">
+              Return to Admin Login
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

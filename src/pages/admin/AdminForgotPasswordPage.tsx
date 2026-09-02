@@ -18,7 +18,7 @@ export const AdminForgotPasswordPage: React.FC = () => {
     try {
       const response = await api.forgotPassword(email);
       setStatus('success');
-      setMessage(response?.message || 'If an account exists, a password reset link has been sent.');
+      setMessage(response?.message || 'A password reset link has been sent to the admin email.');
     } catch (error: any) {
       setStatus('error');
       setMessage(error?.message || 'Password reset request failed.');

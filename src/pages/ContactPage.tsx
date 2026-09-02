@@ -1,21 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Mail, Send, CheckCircle2, AlertCircle, Loader2, ArrowUpRight } from 'lucide-react';
-import { INITIAL_SETTINGS } from '../data/initialData';
 import { dataService } from '../services/dataService';
 
 export const ContactPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const initialSubject = searchParams.get('subject') || '';
-  const contactInfo = INITIAL_SETTINGS;
+
+  const [contactInfo, setContactInfo] = useState({
+    email: 'aminatstudio0@gmail.com',
+    youtube: '',
+    tiktok: '',
+  });
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState(
-    initialSubject ? `${initialSubject}\n\n` : ''
-  );
+  const [message, setMessage] = useState(initialSubject ? `${initialSubject}\n\n` : '');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [statusMessage, setStatusMessage] = useState('');
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const settings = await dataService.getSettings();
+        setContactInfo({
+          email: settings.email || 'aminatstudio0@gmail.com',
+          youtube: settings.youtube || '',
+          tiktok: settings.tiktok || '',
+        });
+      } catch {
+        setContactInfo({
+          email: 'aminatstudio0@gmail.com',
+          youtube: '',
+          tiktok: '',
+        });
+      }
+    };
+    load();
+  }, []);
 
   useEffect(() => {
     if (initialSubject && !message.includes(initialSubject)) {
@@ -23,25 +45,51 @@ export const ContactPage: React.FC = () => {
     }
   }, [initialSubject]);
 
+  const buildMailtoLink = () => {
+    const recipient = 'aminatstudio0@gmail.com';
+    const subject = name.trim()
+      ? `Artwork Inquiry from ${name.trim()}`
+      : 'Inquiry from Aminat Studio Website';
+
+    const cleanMessage = message.trim();
+    const bodyLines = [
+      `Name: ${name.trim() || 'Not provided'}`,
+      `Email: ${email.trim() || 'Not provided'}`,
+    ];
+
+    const artMatch = initialSubject?.match(/Inquiry regarding (.+)$/i);
+    if (artMatch?.[1]) {
+      bodyLines.push(`Artwork: ${artMatch[1].trim()}`);
+    }
+
+    bodyLines.push(`Message: ${cleanMessage || 'No message provided.'}`);
+
+    const mailto = new URL(`mailto:${recipient}`);
+    mailto.searchParams.set('subject', subject);
+    mailto.searchParams.set('body', bodyLines.join('\n\n'));
+    return mailto.toString();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim() || !message.trim()) {
+    if (!message.trim()) {
       setStatus('error');
-      setStatusMessage('Please fill in all required fields.');
+      setStatusMessage('Please enter a message before sending.');
       return;
     }
 
     setStatus('loading');
     try {
-      await dataService.addMessage(name, email, message);
+      window.location.href = buildMailtoLink();
       setStatus('success');
-      setStatusMessage('Thank you! Your message has been sent directly to the studio.');
-      setName('');
-      setEmail('');
-      setMessage('');
+      setStatusMessage('Your email app has been opened with your inquiry ready to send.');
+      setTimeout(() => {
+        setStatus('idle');
+        setStatusMessage('');
+      }, 3000);
     } catch {
       setStatus('error');
-      setStatusMessage('Failed to send message. Please try again or email directly.');
+      setStatusMessage('Unable to open your email app. Please email Aminat directly at aminatstudio0@gmail.com.');
     }
   };
 
@@ -121,7 +169,7 @@ export const ContactPage: React.FC = () => {
               ) : (
                 <>
                   <Send className="w-4 h-4" />
-                  <span>Send Message</span>
+                  <span>Send Inquiry</span>
                 </>
               )}
             </button>

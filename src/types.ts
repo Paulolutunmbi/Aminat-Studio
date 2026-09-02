@@ -19,6 +19,8 @@ export interface Artwork {
   createdAt: string;
   year?: string;
   dimensions?: string;
+  order?: number;
+  sortOrder?: number;
 }
 
 export interface NaturePhoto {
