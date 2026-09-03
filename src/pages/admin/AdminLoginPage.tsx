@@ -19,7 +19,7 @@ export const AdminLoginPage: React.FC = () => {
     try {
       const result = await login(email, password);
       if (result.success) {
-        navigate(result.mustChangePassword ? '/admin/change-password' : '/admin');
+        navigate('/admin');
       } else {
         setError('Please enter a valid admin email and password.');
       }

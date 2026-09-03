@@ -45,7 +45,7 @@ export const AdminChangePasswordPage: React.FC = () => {
             <KeyRound className="w-6 h-6" />
           </div>
           <h1 className="font-serif text-3xl italic tracking-tight">Choose a new password</h1>
-          <p className="text-xs uppercase tracking-[0.18em] font-semibold text-[#8A9A5B]">Required before admin access</p>
+          <p className="text-xs uppercase tracking-[0.18em] font-semibold text-[#8A9A5B]">Update your admin password</p>
         </div>
 
         {error && (

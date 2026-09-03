@@ -7,6 +7,7 @@ import {
   Users,
   MessageSquare,
   Settings,
+  KeyRound,
   LogOut,
   ExternalLink,
   Menu,
@@ -28,6 +29,7 @@ export const AdminLayout: React.FC = () => {
     { label: 'Subscribers', path: '/admin/subscribers', icon: Users },
     { label: 'Messages', path: '/admin/messages', icon: MessageSquare },
     { label: 'Studio Settings', path: '/admin/settings', icon: Settings },
+    { label: 'Change Password', path: '/admin/change-password', icon: KeyRound },
   ];
 
   const isActive = (item: (typeof navItems)[0]) => {
