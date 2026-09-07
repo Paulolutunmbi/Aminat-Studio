@@ -7,7 +7,7 @@ interface AuthContextType {
   username: string | null;
   login: (user: string, pass: string) => Promise<{ success: boolean }>;
   logout: () => Promise<void>;
-  refreshAuthState: () => Promise<void>;
+  refreshAuthState: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,11 +20,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const refreshAuthState = async () => {
     try {
       const result = await api.getAdminStatus();
-      setIsAuthenticated(Boolean(result?.authenticated));
-      setUsername(result?.authenticated ? 'admin' : null);
+      const authenticated = Boolean(result?.authenticated);
+      setIsAuthenticated(authenticated);
+      setUsername(authenticated ? 'admin' : null);
+      return authenticated;
     } catch {
       setIsAuthenticated(false);
       setUsername(null);
+      return false;
     } finally {
       setAuthLoading(false);
     }
@@ -43,8 +46,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { success: false };
       }
 
-      await refreshAuthState();
-      return { success: true };
+      const authenticated = await refreshAuthState();
+      return { success: authenticated };
     } catch {
       setIsAuthenticated(false);
       setUsername(null);

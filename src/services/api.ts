@@ -172,7 +172,7 @@ export const api = {
   },
 
   getAdminStatus: async (): Promise<{ authenticated: boolean }> => {
-    return apiRequest<{ authenticated: boolean }>('/admin/status', {}, true);
+    return apiRequest<{ authenticated: boolean }>('/admin/status', { cache: 'no-store' }, true);
   },
 
   loginAdmin: async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
