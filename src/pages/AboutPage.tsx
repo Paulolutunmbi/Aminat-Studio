@@ -47,7 +47,7 @@ export const AboutPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 items-start mb-24">
-        <div className="md:col-span-5 sticky top-28">
+        <div className="md:col-span-5 md:sticky md:top-28">
           <div className="painting-border bg-[#F5F5F2] overflow-hidden shadow-xs">
             <img
               src={settings.profileImage}
